@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="50sp"
-        android:text=""
+        android:text="0.0"
         android:gravity="end"
         android:layout_weight="1"/>
     <GridLayout
@@ -170,6 +170,17 @@
             android:text="-"
             android:textSize="30sp"
             android:layout_columnWeight="1"/>
+        <Button
+            android:id="@+id/btn_next_acti"
+            android:layout_row="4"
+            android:layout_column="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:layout_columnSpan="4"
+            android:text="->"
+            android:textSize="30sp"/>
+
 
     </GridLayout>
 </LinearLayout>

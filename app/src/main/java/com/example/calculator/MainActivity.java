@@ -1,26 +1,33 @@
 package com.example.calculator;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
-    Button btn_cong,btn_tru,btn_nhan,btn_chia,btn_bang,btn_0,btn_1,btn_2,btn_3,btn_4,btn_5,btn_6,btn_7,btn_8,btn_9,btn_xoa;
+    Button btn_cong,btn_tru,btn_nhan,btn_chia,btn_bang,btn_0,btn_1,btn_2,btn_3,btn_4,btn_5,btn_6,btn_7,btn_8,btn_9,btn_xoa,btn_next_acti;
 
     TextView tv_kq,tv_pt;
 
     String pheptoan,sothunhat,sothuhai;
 
     double ketqua,so1,so2;
-    int count;
+    int count, mycount;
 
-
+    String[] myData;
+    ArrayList<String> duLieu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,10 +55,43 @@ public class MainActivity extends AppCompatActivity {
         btn_tru.setOnClickListener(btnclick);
         btn_nhan.setOnClickListener(btnclick);
         btn_chia.setOnClickListener(btnclick);
+        btn_next_acti.setOnClickListener(btnclick);
 
 
 
     }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("pheptoan",tv_pt.getText().toString());
+        outState.putDouble("ketqua",ketqua);
+        outState.putInt("count",count);
+        outState.putInt("mycount",mycount);
+        outState.putStringArray("mydata",myData);
+        outState.putStringArrayList("dulieu",duLieu);
+        outState.putDouble("so1",so1);
+        outState.putDouble("so2",so2);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        pheptoan = savedInstanceState.getString("pheptoan");
+        tv_pt.setText(pheptoan);
+
+
+        ketqua = savedInstanceState.getDouble("ketqua");
+        tv_kq.setText(savedInstanceState.getDouble("ketqua")+"");
+        count = savedInstanceState.getInt("count");
+        mycount = savedInstanceState.getInt("mycount");
+        myData = savedInstanceState.getStringArray("mydata");
+        duLieu = savedInstanceState.getStringArrayList("dulieu");
+        so1 = savedInstanceState.getDouble("so1");
+        so2 = savedInstanceState.getDouble("so2");
+
+    }
+
     private View.OnClickListener btnclick = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -103,6 +143,14 @@ public class MainActivity extends AppCompatActivity {
             if (view.getId() == R.id.btn_chia) {
                 clickPT("/");
             }
+            if (view.getId() == R.id.btn_next_acti) {
+
+                myData = new String[mycount];
+                for (int i = 0; i < mycount; i++) {
+                    myData[i] = duLieu.get(i);
+                }
+                clickNext(myData);
+            }
         }
     };
 
@@ -130,14 +178,20 @@ public class MainActivity extends AppCompatActivity {
                     so2 = Double.parseDouble(sothuhai);
                     String pt = sothunhat.substring(count,count+1);
                     ketQua(pt,so1,so2);
+                    String data = so1+pt+so2;
+                    duLieu.add(data);
+                    mycount = mycount+1;
                     pheptoan = ketqua+text;
                     so1 = ketqua;
                     count = pheptoan.length()-1;
+
+
                 } else {
                     pheptoan = pheptoan + text;
                     so1 = Double.parseDouble(sothunhat);
                     count = sothunhat.length();
                 }
+
             }
             tv_pt.setText(pheptoan);
         }
@@ -163,8 +217,9 @@ public class MainActivity extends AppCompatActivity {
         sothunhat = null;
         sothuhai = null;
         count = 0;
+        ketqua = 0;
         tv_pt.setText("");
-        tv_kq.setText("");
+        tv_kq.setText("0.0");
 
     }
     private void clickBang() {
@@ -182,18 +237,27 @@ public class MainActivity extends AppCompatActivity {
                     so2 = Double.parseDouble(sothuhai);
                     String pt = sothunhat.substring(count,count+1);
                     ketQua(pt,so1,so2);
+                    String data = so1+pt+so2;
+                    duLieu.add(data);
+                    mycount = mycount+1;
                     pheptoan = ketqua+"";
                     so1 = ketqua;
                     count = pheptoan.length()-1;
+
                 } else {
-                    tv_kq.setText(pheptoan);
-                    so1 = Double.parseDouble(sothunhat);
+                    ketqua = Double.parseDouble(pheptoan);
+                    tv_kq.setText(ketqua+"");
                     count = sothunhat.length();
                 }
             }
             tv_pt.setText(pheptoan);
         }
 
+    }
+    private void clickNext(String[] myList) {
+        Intent lichsu = new Intent(getApplicationContext(),LichSuActivity.class);
+        lichsu.putExtra("lichsu",myList);
+        startActivity(lichsu);
     }
     private void cong(double a, double b) {
         ketqua = a+b;
@@ -235,5 +299,7 @@ public class MainActivity extends AppCompatActivity {
         btn_7 = findViewById(R.id.btn_7);
         btn_8 = findViewById(R.id.btn_8);
         btn_9 = findViewById(R.id.btn_9);
+        btn_next_acti = findViewById(R.id.btn_next_acti);
+        duLieu = new ArrayList<>();
     }
 }
